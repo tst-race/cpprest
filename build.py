@@ -123,7 +123,6 @@ if __name__ == "__main__":
             "-j",
             args.num_threads,
         ],
-        env=env,
     )
 
     builder.create_package(args)

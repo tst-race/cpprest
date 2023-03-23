@@ -49,8 +49,7 @@ if __name__ == "__main__":
     builder.setup_logger(args)
 
     if args.target.startswith("linux"):
-        arch = "arm64" if "arm" in args.target else "amd64"
-        builder.install_packages(args, [f"libssl-dev:{arch}=1.1.1*"])
+        builder.install_packages(args, [("libssl-dev", "1.1.1*", True)])
 
     builder.install_ext(args, [
         ("boost", args.boost_version),

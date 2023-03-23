@@ -51,13 +51,19 @@ if __name__ == "__main__":
     if args.target.startswith("linux"):
         builder.install_packages(args, [("libssl-dev", "1.1.1*", True)])
 
-    builder.install_ext(args, [
-        ("boost", args.boost_version),
-    ])
+    builder.install_ext(
+        args,
+        [
+            ("boost", args.boost_version),
+        ],
+    )
     if args.target.startswith("android"):
-        builder.install_ext(args, [
-            ("openssl", args.openssl_version),
-        ])
+        builder.install_ext(
+            args,
+            [
+                ("openssl", args.openssl_version),
+            ],
+        )
 
     builder.fetch_source(
         args=args,
@@ -70,43 +76,54 @@ if __name__ == "__main__":
 
     logging.root.info("Configuring build")
     if args.target.startswith("linux"):
-        builder.execute(args, [
-            "cmake",
-            f"-H{source_dir}",
-            f"-B{args.build_dir}",
-            f"-DCMAKE_STAGING_PREFIX={args.install_dir}",
-            f"-DCMAKE_INSTALL_PREFIX={args.install_prefix}",
-            "-DCPPREST_EXCLUDE_WEBSOCKETS=ON",
-            "-DCPPREST_EXCLUDE_COMPRESSION=ON",
-            "-DCPPREST_EXCLUDE_BROTLI=ON",
-            "-DWERROR=OFF",
-        ], env=env)
+        builder.execute(
+            args,
+            [
+                "cmake",
+                f"-H{source_dir}",
+                f"-B{args.build_dir}",
+                f"-DCMAKE_STAGING_PREFIX={args.install_dir}",
+                f"-DCMAKE_INSTALL_PREFIX={args.install_prefix}",
+                "-DCPPREST_EXCLUDE_WEBSOCKETS=ON",
+                "-DCPPREST_EXCLUDE_COMPRESSION=ON",
+                "-DCPPREST_EXCLUDE_BROTLI=ON",
+                "-DWERROR=OFF",
+            ],
+            env=env,
+        )
 
     elif args.target.startswith("android"):
-        builder.execute(args, [
-            "cmake",
-            f"-H{source_dir}",
-            f"-B{args.build_dir}",
-            f"-DCMAKE_STAGING_PREFIX={args.install_dir}",
-            f"-DCMAKE_INSTALL_PREFIX={args.install_prefix}",
-            f"-DCMAKE_TOOLCHAIN_FILE={os.environ['ANDROID_NDK']}/{args.target}.toolchain.cmake",
-            "-DCPPREST_EXCLUDE_WEBSOCKETS=ON",
-            "-DCPPREST_EXCLUDE_COMPRESSION=ON",
-            "-DCPPREST_EXCLUDE_BROTLI=ON",
-            "-DBoost_USE_STATIC_LIBS=OFF",
-            "-DWERROR=OFF",
-        ])
+        builder.execute(
+            args,
+            [
+                "cmake",
+                f"-H{source_dir}",
+                f"-B{args.build_dir}",
+                f"-DCMAKE_STAGING_PREFIX={args.install_dir}",
+                f"-DCMAKE_INSTALL_PREFIX={args.install_prefix}",
+                f"-DCMAKE_TOOLCHAIN_FILE={os.environ['ANDROID_NDK']}/{args.target}.toolchain.cmake",
+                "-DCPPREST_EXCLUDE_WEBSOCKETS=ON",
+                "-DCPPREST_EXCLUDE_COMPRESSION=ON",
+                "-DCPPREST_EXCLUDE_BROTLI=ON",
+                "-DBoost_USE_STATIC_LIBS=OFF",
+                "-DWERROR=OFF",
+            ],
+        )
 
     logging.root.info("Building")
-    builder.execute(args, [
-        "cmake",
-        "--build",
-        args.build_dir,
-        "--target",
-        "install",
-        "--",
-        "-j",
-        args.num_threads,
-    ], env=env)
+    builder.execute(
+        args,
+        [
+            "cmake",
+            "--build",
+            args.build_dir,
+            "--target",
+            "install",
+            "--",
+            "-j",
+            args.num_threads,
+        ],
+        env=env,
+    )
 
     builder.create_package(args)
